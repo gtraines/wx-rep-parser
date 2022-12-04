@@ -2,7 +2,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./wx_rep_parser",
+        "./tests",
         "-p",
         "*_test.py"
     ],

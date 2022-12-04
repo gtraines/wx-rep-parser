@@ -1,5 +1,6 @@
 import unittest
-from wx_rep_parser.metar import MetarReport, MetarReportDateTimeGroupSegmentParser
+from context import wx_rep_parser
+from wx_rep_parser.metar import MetarReportDateTimeGroupSegmentParser
 
 
 class MetarReportTest(unittest.TestCase):
@@ -7,7 +8,7 @@ class MetarReportTest(unittest.TestCase):
     def setUp(self):
         pass
 
-    def metar_dtg_can_convert_to_local_time(self):
+    def test_metar_dtg_can_convert_to_local_time(self):
 
         test_dtg = '161753Z'
 

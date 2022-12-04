@@ -20,8 +20,9 @@ class MetarReportDateTimeGroupSegmentParser(ParsableSegmentAbc):
 
     def _parse_raw_string(self, raw_string: str) -> str:
         day_of_month = raw_string[0:2]
-        zulu_time = raw_string[2:4]
-        
+        zulu_time_h = raw_string[2:4]
+        zulu_time_m = raw_string[4:6]
+        zulu_time = str.format('{0}:{1}', zulu_time_h, zulu_time_m)
         from_zone = tz.tzutc()
         to_zone = tz.tzlocal()
         utc = datetime.utcnow()
