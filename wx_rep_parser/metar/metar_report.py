@@ -1,6 +1,6 @@
 from datetime import datetime
 from dateutil import tz
-from ..abscore import ParsableSegmentAbc
+from wx_rep_parser.abscore import ParsableSegmentAbc
 
 
 class MetarSegmentParser(ParsableSegmentAbc):
