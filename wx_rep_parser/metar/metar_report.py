@@ -143,10 +143,69 @@ class PrecipitationSegment(ParsableSegmentAbc):
         if raw_string is not None and len(raw_string) >= 2:
             precipitation_segment = raw_string[-2:].lower()
 
-            if precipitation_segment == 'br':
-                return 'mist'
-            
+            if precipitation_segment == 'dz':
+                return 'drizzle'
+            if precipitation_segment == 'ra':
+                return 'rain'
+            if precipitation_segment == 'sn':
+                return 'snow'
+            if precipitation_segment == 'sg':
+                return 'snow grains'
+            if precipitation_segment == 'ic':
+                return 'ice crystals'
+            if precipitation_segment == 'pl':
+                return 'ice pellets'
+            if precipitation_segment == 'gr':
+                return 'hail'
+            if precipitation_segment == 'gs':
+                return 'small hail or snow pellets'
+            if precipitation_segment == 'up':
+                return 'unknown precipitation'
         return '' 
+
+
+class ObscurationSegment(ParsableSegmentAbc):
+
+    def _parse_raw_string(self, raw_string: str) -> str:
+        obscuration_segment = raw_string.lower()
+        if obscuration_segment == 'br':
+            return 'mist'
+        if obscuration_segment == 'fg':
+            return 'fog'
+        if obscuration_segment == 'fu':
+            return 'smoke'
+        if obscuration_segment == 'du':
+            return 'dust'
+        if obscuration_segment == 'sa':
+            return 'sand'
+        if obscuration_segment == 'ha':
+            return 'haze'
+        if obscuration_segment == 'py':
+            return 'spray'
+        if obscuration_segment == 'va':
+            return 'volcanic ash'
+        return ''
+
+
+class OtherPhenomenaSegment(ParsableSegmentAbc):
+
+    def _parse_raw_string(self, raw_string: str) -> str:
+        other_phenomena = raw_string.lower()
+
+        if other_phenomena == 'po':
+            return 'Dust/sand whirls'
+        if other_phenomena == 'sq':
+            return 'Squalls'
+        if other_phenomena == 'fc':
+            return 'Funnel cloud'
+        if other_phenomena == '+fc':
+            return 'Tornado or waterspout'
+        if other_phenomena == 'ss':
+            return 'Sandstorm'
+        if other_phenomena == 'ds':
+            return 'Dust storm'
+
+        return ''
 
 class WeatherPhenomenon(ParsableSegmentAbc):
 
