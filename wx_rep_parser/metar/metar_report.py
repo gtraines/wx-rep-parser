@@ -137,6 +137,17 @@ class WeatherQualifierSegment(ParsableSegmentAbc):
         return descriptor
 
 
+class PrecipitationSegment(ParsableSegmentAbc):
+
+    def _parse_raw_string(self, raw_string: str) -> str:
+        if raw_string is not None and len(raw_string) >= 2:
+            precipitation_segment = raw_string[-2:].lower()
+
+            if precipitation_segment == 'br':
+                return 'mist'
+            
+        return '' 
+
 class WeatherPhenomenon(ParsableSegmentAbc):
 
     def _parse_raw_string(self, raw_string: str) -> str:

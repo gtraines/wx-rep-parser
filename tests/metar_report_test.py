@@ -1,4 +1,5 @@
 import unittest
+
 from context import wx_rep_parser
 from wx_rep_parser.metar import MetarReportDateTimeGroupSegmentParser
 
@@ -17,6 +18,7 @@ class MetarReportTest(unittest.TestCase):
         parsed_value = report_instance._parse_raw_string(test_dtg)
 
         print(parsed_value)
+        
 
 
 if __name__ == '__main__':
