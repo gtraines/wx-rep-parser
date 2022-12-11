@@ -5,6 +5,12 @@ from wx_rep_parser.abscore import ParsableSegmentAbc
 
 class MetarSegmentParser(ParsableSegmentAbc):
     
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        segment = string_segments[0]
+        if segment.lower().startswith('k'):
+            return 'METAR'
+        return segment
+
     def _parse_raw_string(self, raw_string: str) -> str:
         if raw_string.lower() == 'metar':
             return "Routine Weather Report (METAR)"
@@ -14,13 +20,25 @@ class MetarSegmentParser(ParsableSegmentAbc):
 
 class StationIdentifierSegmentParser(ParsableSegmentAbc):
 
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        segment = string_segments[0]
+        if segment.lower().startswith('k'):
+            return segment
+        return segment
+
     def _parse_raw_string(self, raw_string: str) -> str:
-        return raw_string.upper()
+        return 'Conditions at: ' + raw_string.upper()
 
 
 class MetarReportDateTimeGroupSegmentParser(ParsableSegmentAbc):
 
-    def _parse_raw_string(self, raw_string: str) -> str:
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        segment = string_segments[1]
+        if segment.lower().startswith('k'):
+            return string_segments[2]
+        return segment
+
+    def _parse_date_time_group_string(self, raw_string: str) -> str:
         day_of_month = raw_string[0:2]
         zulu_time_h = raw_string[2:4]
         zulu_time_m = raw_string[4:6]
@@ -38,9 +56,19 @@ class MetarReportDateTimeGroupSegmentParser(ParsableSegmentAbc):
         local_time = utc.astimezone(tz=to_zone)
 
         return str.format('{0} hours Zulu on Day {1} ({2} local time)', zulu_time, day_of_month, local_time)
+    
+    def _parse_raw_string(self, raw_string: str) -> str:
+        parsed_dtg = self._parse_date_string(raw_string)
+        return 'observed ' + parsed_dtg
 
 
-class ReportModifierSegment(ParsableSegmentAbc):
+class ReportModifierSegmentParser(ParsableSegmentAbc):
+
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        for segment in string_segments:
+            if segment.lower() == 'auto' or segment.lower() == 'cor':
+                return segment
+        return ''
 
     def _parse_raw_string(self, raw_string: str) -> str:
         if raw_string.lower() == 'auto':
@@ -50,7 +78,39 @@ class ReportModifierSegment(ParsableSegmentAbc):
         return 'unknown report modifier'
 
 
-class WindSegment(ParsableSegmentAbc):
+class PrecipitationDiscriminatorSegmentParser(ParsableSegmentAbc):
+
+    def _has_precipitation_discriminator(self, string_segments: list[str]) -> bool:
+        for entry in string_segments:
+            if entry.lower() == 'a01' or entry.lower() == 'a02':
+                return True
+        return False
+
+    def _get_precipitation_descriminator(self, string_segments: list[str]) -> str:
+        for entry in string_segments:
+            if entry.lower() == 'a01' or entry.lower() == 'a02':
+                return entry
+        return ''
+
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        if self._has_precipitation_discriminator(string_segments):
+            return self._get_precipitation_descriminator(string_segments)
+        return ''
+
+    def _parse_raw_string(self, raw_string: str) -> str:
+        if raw_string.lower() == 'a01':
+            return 'prescription discriminator included'
+        if raw_string.lower() == 'a02':
+            return 'no precipitation discriminator'
+        return ''
+
+
+class WindSegmentParser(ParsableSegmentAbc):
+
+
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        segment = string_segments[4]
+        return segment
 
     # TODO: need to account for the extreme variable wind segment (> 60 degrees variable == xxxVxxx)
     def _parse_raw_string(self, raw_string: str) -> str:
@@ -76,6 +136,10 @@ class WindSegment(ParsableSegmentAbc):
 
 class VisibilitySegment(ParsableSegmentAbc):
 
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        segment = string_segments[5]
+        return segment
+
     def _parse_raw_string(self, raw_string: str) -> str:
         prevailing_visibility = raw_string[0:-2]
         
@@ -84,6 +148,10 @@ class VisibilitySegment(ParsableSegmentAbc):
 
 
 class WeatherQualifierSegment(ParsableSegmentAbc):
+
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        segment = string_segments[6]
+        return segment
 
     def _get_intensity_or_proximity(self, raw_string: str) -> str:
         if raw_string[0:1] == '-':
