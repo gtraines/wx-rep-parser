@@ -107,31 +107,58 @@ class PrecipitationDiscriminatorSegmentParser(ParsableSegmentAbc):
 
 class WindSegmentParser(ParsableSegmentAbc):
 
+    def _is_extreme_variable_wind_segment(self, segment: str) -> bool:
+        if len(segment.lower()) == 7 \
+            and str.isalnum(segment[0:3]) \
+            and segment[3:4].lower() == 'v' \
+            and str.isalnum(segment[4:]):
+            return True
+        return False
 
     def _get_string_from_segments(self, string_segments: list[str]) -> str:
-        segment = string_segments[4]
-        return segment
+        wind_segments = []
+        for segment in string_segments:
+            if segment.lower().endswith('kt'):
+                wind_segments.append(segment)
+            if self._is_extreme_variable_wind_segment(segment):
+                wind_segments.append(segment)
+        
+        return str.join(' ', wind_segments)
 
-    # TODO: need to account for the extreme variable wind segment (> 60 degrees variable == xxxVxxx)
-    def _parse_raw_string(self, raw_string: str) -> str:
+    # account for the extreme variable wind segment (> 60 degrees variable == xxxVxxx)
+    def _get_extreme_variable_wind_report(self, raw_string: str) -> str:
+        bottom_degree_range = raw_string[0:3]
+        top_degree_range = raw_string[4:]
+        return 'Winds from directions ranging from ' + bottom_degree_range + ' degrees to ' + top_degree_range + ' degrees'
+
+    def _get_normal_wind_report(self, raw_string: str) -> str:
         wind_from_direction = raw_string[0:3]
         if wind_from_direction.lower() == 'vrb':
             wind_from_direction = 'variable directions'
         else:
             wind_from_direction = str.format('{0} degrees', wind_from_direction)
-
         windspeed_segment = self._parse_wind_speed(raw_string)
         return str.format('Wind is blowing from {0} at {1}', wind_from_direction, windspeed_segment, )
-
+        
     def _parse_wind_speed(self, raw_segment_string: str) -> str:
         windspeed_str = ''
         windspeed_segment = raw_segment_string[3:-2]
-        if windspeed_segment.find('G') != -1:
-            speed_segments = windspeed_str.split('G')
-            windspeed_str = str.format('{0} gusting to {1} kts', speed_segments[0], speed_segments[1])
+        if windspeed_segment.lower().find('g') != -1:
+            speed_segments = windspeed_segment.lower().split(sep='g')
+            windspeed_str = str.format('{0} kts gusting to {1} kts', speed_segments[0], speed_segments[1])
         else:
             windspeed_str = str.format('{0} kts', windspeed_segment)
         return windspeed_str
+
+    def _parse_raw_string(self, raw_string: str) -> str:
+        segments = str.split(raw_string, ' ')
+        report_segments = []
+        for segment in segments:
+            if self._is_extreme_variable_wind_segment(segment):
+                report_segments.append(self._get_extreme_variable_wind_report(segment))
+            else:
+                report_segments.append(self._get_normal_wind_report(segment))
+        return str.join(' ', report_segments)
 
 
 class VisibilitySegment(ParsableSegmentAbc):
