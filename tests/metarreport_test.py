@@ -1,8 +1,8 @@
 import unittest
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 from context import wx_rep_parser
-from wx_rep_parser.metar.metar_report import  MetarSegmentParser, \
+from wx_rep_parser.metar.metarreport import  MetarSegmentParser, \
         MetarReportDateTimeGroupSegmentParser, \
         ReportModifierSegmentParser, \
         WindSegmentParser
@@ -101,8 +101,7 @@ class MetarReportTest(unittest.TestCase):
 
         parsed_value = report_instance._parse_raw_string(test_dtg)
 
-        print(parsed_value)
-        
+        print(parsed_value)    
 
 
 if __name__ == '__main__':
