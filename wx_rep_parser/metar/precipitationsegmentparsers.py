@@ -29,7 +29,12 @@ class PrecipitationDiscriminatorSegmentParser(ParsableSegmentAbc):
 
 
 class PrecipitationSegmentParser(ParsableSegmentAbc):
-
+    
+    def _get_string_from_segments(self, string_segments: list[str]) -> str:
+        if self._has_precipitation_discriminator(string_segments):
+            return self._get_precipitation_descriminator(string_segments)
+        return ''
+    
     def _parse_raw_string(self, raw_string: str) -> str:
         if raw_string is not None and len(raw_string) >= 2:
             precipitation_segment = raw_string[-2:].lower()

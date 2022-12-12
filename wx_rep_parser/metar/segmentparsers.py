@@ -1,5 +1,6 @@
 from abscore.parsablesegmentabc import ParsableSegmentAbc
 
+
 class MetarSegmentParser(ParsableSegmentAbc):
     
     def _get_string_from_segments(self, string_segments: list[str]) -> str:

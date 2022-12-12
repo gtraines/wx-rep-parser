@@ -1,20 +1,11 @@
 import unittest
-from abc import ABCMeta
-
+from metartestabc import MetarTestAbc
 from context import wx_rep_parser
 from wx_rep_parser.metar.metarreport import  MetarSegmentParser, \
         MetarReportDateTimeGroupSegmentParser, \
         ReportModifierSegmentParser, \
         WindSegmentParser
 
-class MetarTestAbc(unittest.TestCase):
-
-    __metaclass__ = ABCMeta
-
-    metar_example_string_normal = 'METAR KGGG 161753Z AUTO 14021G26KT 3/4SM ' \
-            + '+TSRA BR BKN008 OVC012CB 18/17 A2970 RMK PRESFR'
-
-    metar_example_string_phx = 'KPHX 110051Z 24004KT 10SM CLR 16/05 A3004 RMK AO2 SLP168 T01560050'
 
 class MetarWindSegmentParserTest(MetarTestAbc):
     _parser: WindSegmentParser = None
